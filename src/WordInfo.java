@@ -1,4 +1,4 @@
-public class WordInfo {
+public class WordInfo{
     private String word;
     private int moves;
     private String history;

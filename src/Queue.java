@@ -1,4 +1,4 @@
-public class Queue<E extends Comparable> {
+public class Queue<E> {
 
     private ListNode<E> head = new ListNode<>();
     private ListNode<E> tail;
@@ -24,11 +24,15 @@ public class Queue<E extends Comparable> {
         size++;
     }
 
+    public void clearQueue() {
+        head.next = null;
+        tail = head;
+    }
+
     public E dequeue() {
         ListNode<E> node = head.next;
-        if (node.next == null) {
+        if (head.next == null) {
             tail = head;
-            head.next = null;
         } else {
             head.next = node.next;
         }
@@ -38,6 +42,10 @@ public class Queue<E extends Comparable> {
 
     public boolean isEmpty() {
         return this.size == 0;
+    }
+
+    public int getSize() {
+        return this.size;
     }
 
     private class ListNode<E> {
