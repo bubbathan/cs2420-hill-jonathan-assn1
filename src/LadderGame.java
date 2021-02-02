@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class LadderGame {
     public ArrayList<ArrayList<String>> dictionary;
     public ArrayList<ArrayList<String>> dictionaryClone = new ArrayList<>();
+
     public LadderGame(String dictionaryFile) {
         this.dictionary = readDictionary(dictionaryFile);
         for (int i = 0; i < this.dictionary.size(); i++) {
@@ -13,16 +14,10 @@ public class LadderGame {
     }
 
     public void play(String start, String end) {
-        // TODO: Write some good stuff here
         if (start.length() != end.length()) {
             System.out.printf("%s and %s are not the same length", start, end);
         } else if (!this.dictionary.get(start.length()).contains(start) || !this.dictionary.get(end.length()).contains(end)) {
             System.out.printf("%s and/or %s are not in the dictionary", start, end);
-        }
-
-
-        for (int i = 0; i < this.dictionary.size(); i++) {
-            this.dictionaryClone.add((ArrayList<String>) this.dictionary.get(i).clone());
         }
 
         int enqueues = 0;
@@ -51,7 +46,6 @@ public class LadderGame {
                         enqueues++;
                     }
                 }
-
             }
             partialSolutionQueue.isEmpty();
         }
@@ -59,10 +53,12 @@ public class LadderGame {
         for (int i = 0; i < dictionaryClone.size(); i++) {
             this.dictionary.add((ArrayList<String>) dictionaryClone.get(i).clone());
         }
-
-
+        if (partialSolutionQueue.isEmpty() && !ladderComplete) {
+            System.out.printf("%s => %s : No ladder found\n", start, end);
+        }
     }
 
+    // Finds all the words that are one letter away from the word passed in
     public ArrayList<String> oneAway(String word, boolean withRemoval) {
         ArrayList<String> words = new ArrayList<>();
 
@@ -111,7 +107,7 @@ public class LadderGame {
                 allWords.add(word);
                 longestWord = Math.max(longestWord, word.length());
             }
-            
+            // Organizing the dictionary
             ArrayList<ArrayList<String>> wordLists = new ArrayList<>();
             for(int i = 0; wordLists.size() <= longestWord; i++) {
                 wordLists.add(new ArrayList<String>());
