@@ -42,7 +42,6 @@ public class LadderGame {
                 allWords.add(word);
                 longestWord = Math.max(longestWord, word.length());
             }
-
             
             ArrayList<ArrayList> wordLists = new ArrayList<>();
             while (wordLists.size() < longestWord) {
