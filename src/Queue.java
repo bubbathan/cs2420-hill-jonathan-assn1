@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class Queue<E extends Comparable> {
 
     private ListNode<E> head = new ListNode<>();
@@ -10,8 +8,6 @@ public class Queue<E extends Comparable> {
         this.size = 0; tail = head;
     }
 
-
-
     public void enqueue(E value) {
         ListNode<E> node = new ListNode<>(value);
         ListNode<E> current = head.next;
@@ -21,16 +17,23 @@ public class Queue<E extends Comparable> {
             previous = current;
             current = current.next;
         }
-        
+
         previous.next = node;
         node.next = null;
         tail = node;
+        size++;
     }
 
     public E dequeue() {
-        E firstValue = wordLadderQueue.get(0);
-        wordLadderQueue.remove(wordLadderQueue.get(0));
-        return firstValue;
+        ListNode<E> node = head.next;
+        if (node.next == null) {
+            tail = head;
+            head.next = null;
+        } else {
+            head.next = node.next;
+        }
+        size--;
+        return node.value;
     }
 
     public boolean isEmpty() {
