@@ -42,9 +42,18 @@ public class LadderGame {
                 allWords.add(word);
                 longestWord = Math.max(longestWord, word.length());
             }
-
-            // TODO: You need to do something here to organize the words into groups/arrays of words with the same size
-
+            
+            ArrayList<ArrayList> wordLists = new ArrayList<>();
+            while (wordLists.size() < longestWord) {
+                for (int i = wordLists.size(); i <= longestWord; i++) {
+                    ArrayList<String> wordSubList = new ArrayList<>();
+                    for (String nextWord : allWords) {
+                        if (nextWord.length() == wordLists.size()) {
+                            wordSubList.add(nextWord);
+                        }
+                    }
+                }
+            }
         }
         catch (java.io.IOException ex) {
             System.out.println("An error occurred trying to read the dictionary: " + ex);
