@@ -1,11 +1,30 @@
 import java.util.ArrayList;
 
-public class Queue<E> {
+public class Queue<E extends Comparable> {
 
-    ArrayList<E> wordLadderQueue = new ArrayList<E>();
+    private ListNode<E> head = new ListNode<>();
+    private ListNode<E> tail;
+    private int size;
+
+    public Queue() {
+        this.size = 0; tail = head;
+    }
+
+
 
     public void enqueue(E value) {
-        wordLadderQueue.add(value);
+        ListNode<E> node = new ListNode<>(value);
+        ListNode<E> current = head.next;
+        ListNode<E> previous = head;
+
+        while (current != null) {
+            previous = current;
+            current = current.next;
+        }
+        
+        previous.next = node;
+        node.next = null;
+        tail = node;
     }
 
     public E dequeue() {
@@ -15,6 +34,16 @@ public class Queue<E> {
     }
 
     public boolean isEmpty() {
-        return wordLadderQueue.size() == 0;
+        return this.size == 0;
+    }
+
+    private class ListNode<E> {
+        public E value;
+        public ListNode<E> next;
+
+        public ListNode() { }
+        public ListNode(E o) {
+            this.value = o;
+        }
     }
 }
