@@ -3,14 +3,11 @@ import java.util.Scanner;
 import java.util.ArrayList;
 
 public class LadderGame {
-    public ArrayList<ArrayList<String>> dictionary;
+    public ArrayList<ArrayList<String>> dictionary = new ArrayList<>();
     public ArrayList<ArrayList<String>> dictionaryClone = new ArrayList<>();
 
     public LadderGame(String dictionaryFile) {
-        this.dictionary = readDictionary(dictionaryFile);
-        for (int i = 0; i < this.dictionary.size(); i++) {
-            this.dictionaryClone.add((ArrayList<String>) this.dictionary.get(i).clone());
-        }
+        readDictionary(dictionaryFile);
     }
 
     public void play(String start, String end) {
@@ -18,6 +15,10 @@ public class LadderGame {
             System.out.printf("%s and %s are not the same length", start, end);
         } else if (!this.dictionary.get(start.length()).contains(start) || !this.dictionary.get(end.length()).contains(end)) {
             System.out.printf("%s and/or %s are not in the dictionary", start, end);
+        }
+
+        for (int i = 0; i < this.dictionary.size(); i++) {
+            this.dictionaryClone.add((ArrayList<String>) this.dictionary.get(i).clone());
         }
 
         int enqueues = 0;
@@ -30,28 +31,27 @@ public class LadderGame {
         while (!partialSolutionQueue.isEmpty() && !ladderComplete) {
             WordInfo dequeueSolution = partialSolutionQueue.dequeue();
             ArrayList<String> solutionList = oneAway(dequeueSolution.getWord(), false);
-            if (solutionList.size() > 0) {
-                for (String word : solutionList) {
-                    String stringHistory = dequeueSolution.getHistory() + " " + word;
-                    int newMoves = dequeueSolution.getMoves() + 1;
-                    WordInfo newPartialSolution = new WordInfo(word, newMoves, stringHistory);
-                    if (newPartialSolution.getWord().compareTo(end) == 0) {
-                        System.out.printf("%s => %s : %d Moves [%s] total enqueues %d\n", start, end,
-                                newPartialSolution.getMoves(), newPartialSolution.getHistory(), enqueues);
-                        partialSolutionQueue.clearQueue();
-                        ladderComplete = true;
-                        partialSolutionQueue.isEmpty();
-                    } else {
-                        partialSolutionQueue.enqueue(newPartialSolution);
-                        enqueues++;
-                    }
+            this.dictionary.get(start.length()).removeAll(solutionList);
+            
+            for (String word : solutionList) {
+                String stringHistory = dequeueSolution.getHistory() + " " + word;
+                int newMoves = dequeueSolution.getMoves() + 1;
+                WordInfo newPartialSolution = new WordInfo(word, newMoves, stringHistory);
+
+                if (newPartialSolution.getWord().compareTo(end) == 0) {
+                    System.out.printf("%s => %s : %d Moves [%s] total enqueues %d\n", start, end,
+                            newPartialSolution.getMoves(), newPartialSolution.getHistory(), enqueues);
+                    partialSolutionQueue.clearQueue();
+                    ladderComplete = true;
+                } else {
+                    partialSolutionQueue.enqueue(newPartialSolution);
+                    enqueues++;
                 }
             }
-            partialSolutionQueue.isEmpty();
         }
         this.dictionary.removeAll(dictionary);
-        for (int i = 0; i < dictionaryClone.size(); i++) {
-            this.dictionary.add((ArrayList<String>) dictionaryClone.get(i).clone());
+        for (ArrayList<String> strings : dictionaryClone) {
+            this.dictionary.add((ArrayList<String>) strings.clone());
         }
         if (partialSolutionQueue.isEmpty() && !ladderComplete) {
             System.out.printf("%s => %s : No ladder found\n", start, end);
@@ -64,23 +64,29 @@ public class LadderGame {
 
         while (!withRemoval) {
             for (String wordTwo : this.dictionary.get(word.length())) {
-                int wordDifference = 0;
-                for (int j = 0; j < word.length(); j++) {
-                    char charOne = word.charAt(j);
-                    char charTwo = wordTwo.charAt(j);
+                int wordDifference = diff(word, wordTwo);
 
-                    if (charOne == charTwo) {
-                        wordDifference++;
-                    }
-                }
                 if (wordDifference == word.length() - 1) {
                     words.add(wordTwo);
                 }
             }
             withRemoval = true;
         }
-        this.dictionary.get(word.length()).removeAll(words);
+
         return words;
+    }
+
+    public int diff(String start, String end) {
+        int wordDifference = 0;
+        for (int j = 0; j < start.length(); j++) {
+            char charOne = start.charAt(j);
+            char charTwo = end.charAt(j);
+
+            if (charOne == charTwo) {
+                wordDifference++;
+            }
+        }
+        return wordDifference;
     }
 
     public void listWords(int length, int howMany) {
@@ -92,7 +98,7 @@ public class LadderGame {
     /*
         Reads a list of words from a file, putting all words of the same length into the same array.
      */
-    private ArrayList<ArrayList<String>> readDictionary(String dictionaryFile) {
+    private void readDictionary(String dictionaryFile) {
         File file = new File(dictionaryFile);
         ArrayList<String> allWords = new ArrayList<>();
 
@@ -108,18 +114,15 @@ public class LadderGame {
                 longestWord = Math.max(longestWord, word.length());
             }
             // Organizing the dictionary
-            ArrayList<ArrayList<String>> wordLists = new ArrayList<>();
-            for(int i = 0; wordLists.size() <= longestWord; i++) {
-                wordLists.add(new ArrayList<String>());
+            for(int i = 0; this.dictionary.size() <= longestWord; i++) {
+                this.dictionary.add(new ArrayList<String>());
             }
             for (String word : allWords) {
-                wordLists.get(word.length()).add(word);
+                this.dictionary.get(word.length()).add(word);
             }
-            return wordLists;
         }
         catch (java.io.IOException ex) {
             System.out.println("An error occurred trying to read the dictionary: " + ex);
         }
-        return null;
     }
 }
